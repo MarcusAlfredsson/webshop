@@ -1,0 +1,13 @@
+.App-header {
+  background-color: #222;
+  height: 100px;
+  padding: 20px;
+  color: white;
+  text-align: center;
+}
+
+.link {
+  font-size: 2em;
+  color: white;
+  padding-top: 10px;
+}
