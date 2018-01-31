@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { getProducts, setOrder } from "../store/OrderStore";
-import { createOrder } from "../Api";
-import {BrowserRouter as router} from 'react-router-dom';
+import { getOrderedProducts, setOrder, removeOrderedProducts } from '../store/OrderStore';
+import { createOrder } from '../Api';
 
 class Payment extends Component {
     constructor() {
@@ -10,33 +8,51 @@ class Payment extends Component {
         this.state = {
             email: null,
             acceptedTerms: false,
-            name: null
+            name: null,
+            isFormValid: false,
+            error: null
         }
     }
 
     handleChange(event){
         const {name, value} = event.target;
-        if (name === "email") {
+        if (name === 'email') {
             this.setState({
-                email: value
+                email: value, 
+                isFormValid: this.isFormValid(value, this.state.name, this.state.acceptedTerms)
             });
-        } else if (name === "terms") {
+        } else if (name === 'terms') {
             this.setState({
-                acceptedTerms: !this.state.acceptedTerms
+                acceptedTerms: !this.state.acceptedTerms,
+                isFormValid: this.isFormValid(this.state.email, this.state.name, !this.state.acceptedTerms)
+                
             });
-        } else if (name === "name") {
+        } else if (name === 'name') {
             this.setState({
-                name: value
+                name: value,
+                isFormValid: this.isFormValid(this.state.email, value, !this.state.acceptedTerms)
             });
         }
     }
 
-    confirmOrder() {
+    isFormValid(email, name, acceptedTerms) {
+        //TODO: change email validation for regex
+        if (email === null || email === undefined || email.length < 1) {
+            return false;
+        } else if (name === null || name === undefined || name.length < 1) {
+            return false;
+        } else if (acceptedTerms === false) {
+            return false;
+        } 
+        return true;
+    }
+
+    confirmOrder(e) {
+        e.preventDefault();
         if (!this.state.acceptedTerms) {
             return;
         }
-        const products = getProducts();
-        // const price = products.reduce((a, b) => {return a.price + b.price}, 0);
+        const products = getOrderedProducts();
         let price = 0;
         for(var i = 0; i < products.length; i++) {
             price = price + products[i].price;
@@ -50,35 +66,47 @@ class Payment extends Component {
 
         createOrder(order).then(savedOrder => {
             setOrder(savedOrder);
-            console.log("savedOrder", savedOrder);
-            this.props.history.push("/confirmation");
+            removeOrderedProducts();
+            console.log('savedOrder', savedOrder);
+            this.props.history.push('/confirmation');
 
-        }).catch(error => console.error("couldnt save order", error));
+        }).catch(error => this.setState({error: 'Kunde inte genomföra order, var vänligen försök senare!'}));
 
     }
 
     render() {
+        if (this.state.error) {
+            return (
+                <strong>{this.state.error}</strong>
+            );
+        }
+        
+
         return (
-            <div>
+            <form onSubmit={(e) => this.confirmOrder(e)}>
                 <strong>Betalning sker med faktura, ange e-post för faktura</strong>
-                <label> Namn:
-                    <input type="input" name="name" onChange={e => this.handleChange(e)} />
-                </label>
-                <label> E-post:
-                    <input type="email" name="email" onChange={e => this.handleChange(e)} />
-                </label>
-                <label>
-                    Acceptera krav:
-                    <input type="checkbox" name="terms" onChange={e => this.handleChange(e)} value={this.state.acceptedTerms} />
-                </label>
-                <button className="btn btn-primary" disabled={!this.state.acceptedTerms} onClick={() => this.confirmOrder()} > Bekräfta köp</button>
-            </div>
+                <div className='form-group'>
+                    <label htmlFor='paymentName'> 
+                        Namn:
+                    </label>
+                    <input type='input' id='paymentName' name='name' className="form-control" onChange={e => this.handleChange(e)} />
+                </div>
+                <div className='form-group'>
+                    <label htmlFor='paymentEmail'>
+                        E-post:
+                    </label>
+                    <input type='email' id='paymentEmail' name='email' className="form-control" onChange={e => this.handleChange(e)} />
+                </div>
+                <div className='form-group'>
+                    <label htmlFor='paymentTerms'>
+                        Acceptera krav:
+                    </label>
+                    <input type='checkbox' id='paymentTerms' name='terms' className="form-check-input"  onChange={e => this.handleChange(e)} value={this.state.acceptedTerms} />
+                </div>
+                <button type="submit" className='btn btn-primary' disabled={!this.state.isFormValid} > Bekräfta köp</button>
+            </form>
         );
     }
 }
-
-Payment.propTypes = {
-
-};
 
 export default Payment;

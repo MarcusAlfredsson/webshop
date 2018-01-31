@@ -1,6 +1,5 @@
 import React, { Component} from 'react';
 import PropTypes from 'prop-types';
-import './Product.css';
 
 class Product extends Component {
     constructor() {
@@ -18,12 +17,15 @@ class Product extends Component {
         const {product, onAdd} = this.props;
         return (
             <div>
-                <div></div>
-                <h3>{product.name}</h3>
-                <p>Pris: {product.price}</p>
-                <button className="btn btn-default" onClick={() => this.showDescription()}>Läs mer</button>
-                {this.state.showDescription ? <div>{product.description}</div> : <div />}
-                <button className="btn btn-primary add-button" onClick={() => onAdd(product)}>Lägg till vara i varukorg</button>
+                <div>
+                    <h3>{product.name}</h3>
+                    <p>Pris: {product.price} {product.currency}</p>
+                </div>
+                {this.state.showDescription ? <div dangerouslySetInnerHTML={{ __html: product.description }} /> : <div />}
+                <div>
+                    <button className='btn btn-default' onClick={() => this.showDescription()}>Läs mer</button>
+                    <button className='btn btn-primary add-button' onClick={() => onAdd(product)}>Lägg till vara i varukorg</button>
+                </div>
             </div>
         );
     }

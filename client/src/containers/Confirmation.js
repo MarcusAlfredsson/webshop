@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { getOrder } from "../store/OrderStore";
+import { getOrder } from '../store/OrderStore';
 
 class Confirmation extends Component {
     constructor() {
@@ -8,20 +7,19 @@ class Confirmation extends Component {
         this.state = {order: getOrder()};
     }
     render() {
-        const {name, products, email} = this.state.order
+        const {orderId, products, email} = this.state.order
         return (
             <div>
-                <h2>Du har gjort en beställning av:</h2> 
-                {products.map(item => <div>{item.name}</div>)}
+                <h2>Du har gjort beställning med ordernummer: {orderId} </h2>
+                <h3>Beställning består av produkterna:</h3> 
+                <ul>
+                    {products.map(item => <li>{item.name}</li>)}
+                </ul>
 
                 <div>Fakturan kommer skickas till e-post {email}</div>
             </div>
         );
     }
 }
-
-Confirmation.propTypes = {
-
-};
 
 export default Confirmation;

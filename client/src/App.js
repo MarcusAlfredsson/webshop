@@ -11,8 +11,6 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      // order: [],
-      // orderCount: 0,
       error: null,
     };
   }
@@ -23,29 +21,33 @@ class App extends Component {
 
   render() {
     if (this.state.error) {
-      return "Något gick fel";
+      return 'Något gick fel';
     }
 
     return (
-      <div className="App">
-        <header className="App-header">
-        <div className="col-md-1" >
-          <a href="/" className="glyphicon glyphicon-home link" />
+      <div className='App'>
+        <header className='App-header'>
+        <div className='col-md-1' >
+          <a href='/' >
+            <span className='glyphicon glyphicon-home link' />
+          </a>
         </div>
-        <div className="col-md-10">
+        <div className='col-md-10'>
           <h1>Webshop</h1>
         </div>
-        <div className="col-md-1">
-          <a href="/orderbag" className="glyphicon glyphicon-shopping-cart link"></a>
+        <div className='col-md-1'>
+          <a href='/orderbag' className='glyphicon glyphicon-shopping-cart link'>
+            <span id='orderBagTotal' />
+          </a>
         </div>
         </header>
-        <div className="container">
+        <div className='container'>
           <Router>
             <div>
-              <Route exact path="/" component={Products}/>
-              <Route path="/orderbag" component={OrderBag}/>
-              <Route path="/payment" component={Payment}/>
-              <Route path="/confirmation" component={Confirmation}/>
+              <Route exact path='/' component={Products}/>
+              <Route path='/orderbag' component={OrderBag}/>
+              <Route path='/payment' component={Payment}/>
+              <Route path='/confirmation' component={Confirmation}/>
             </div>
           </Router>
           {/* <Products addProduct={(product) => this.addProduct(product)}/> */}

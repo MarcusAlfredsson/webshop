@@ -1,5 +1,5 @@
 export function getOrder() {
-    return JSON.parse(localStorage.getItem('order') || "[]");
+    return JSON.parse(localStorage.getItem('order') || '[]');
 }
 
 export function removeOrder() {
@@ -11,11 +11,13 @@ export function setOrder(order) {
 }
 
 export function setProductsForOrder(products) {
-    let order = getOrder();
-    localStorage.setItem('products', JSON.stringify(products));
+    localStorage.setItem('orderedProducts', JSON.stringify(products));
 }
 
-export function getProducts() {
-    return JSON.parse(localStorage.getItem('products') || "[]");
+export function getOrderedProducts() {
+    return JSON.parse(localStorage.getItem('orderedProducts') || '[]');
 }
 
+export function removeOrderedProducts() {
+    localStorage.removeItem('orderedProducts');
+}

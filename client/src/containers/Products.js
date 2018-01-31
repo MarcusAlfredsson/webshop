@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Product from '../components/Product';
-import { getProducts } from "../Api";
+import Product from './Product';
+import { getProducts } from '../Api';
 import * as OrderStore from '../store/OrderStore';
 
 class Products extends Component {
@@ -8,28 +8,31 @@ class Products extends Component {
         super();
         this.state = {
             products: [],
-            orderedProducts: OrderStore.getProducts()
+            orderedProducts: OrderStore.getOrderedProducts(),
+            error: null,
         };
     }
 
     componentWillMount()  {
         getProducts().then(res => this.setState({
             products: res
-        }))
-        
+        })).catch(error => this.setState({error: 'Fel vid hämtning av produkter, vänligen testa senare!'}));
     }
 
-    componentWillUnmount() {
-        console.log("will unmount")
-        OrderStore.setProductsForOrder(this.state.orderedProducts);
+    componentDidMount() {
+        // This will cause rerender!!!!
+        this.updateOrderBag(this.state.orderedProducts.length);
     }
 
+    updateOrderBag(numberOfProducts) {
+        document.getElementById('orderBagTotal').innerHTML = numberOfProducts;
+    }
     
     addProduct(product) {
-        console.log("Product with id: " + product + "was added to order");
         var isProductAdded = this.state.orderedProducts.find((item) => item.id === product.id);
         if (isProductAdded === undefined) {
             const updatedProducts = [...this.state.orderedProducts, product]
+            this.updateOrderBag(updatedProducts.length);
             this.setState({
                 orderedProducts: updatedProducts
             });
@@ -38,9 +41,16 @@ class Products extends Component {
     }
 
     render() {
+        if (this.state.error) {
+            return (
+                <div>
+                    {this.state.error}
+                </div>
+            );
+        }
+
         return (
-            <div>
-                <a href="/OrderBag" className="glyphicon glyphicon-shopping-cart link" style={{color: "black"}}>{this.state.orderedProducts.length}</a>
+            <div className='list-group'>
                 {this.state.products.map((product) => <Product key={product.id} product={product} onAdd={(product) => this.addProduct(product)}/>) }
             </div>
         );

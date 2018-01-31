@@ -8,8 +8,8 @@ const fs = require('fs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
   });
 
@@ -23,7 +23,6 @@ app.post('/order', (req, res) => {
         port: 3306
     });
     
-    // console.log("creae order req", req.body);
     const order = req.body;
     const products = order.products;
     let response = {
@@ -36,10 +35,9 @@ app.post('/order', (req, res) => {
 
     connection.connect();
     
-    
     connection.beginTransaction((error) => {
         if (error) { 
-            console.error("could not open transation", error);
+            console.error('could not open transation', error);
             throw error;
         }
     
@@ -47,31 +45,31 @@ app.post('/order', (req, res) => {
         connection.query(orderSql, (err, results) => {
             if (err) {
                 connection.rollback(() => {
-                    console.error("couldnt save order", err);
+                    console.error('couldnt save order', err);
                     throw err;
                 });
             }
             response.orderId = results.insertId
 
-            let productsSql = "Insert into ProductOrder (OrderId, Price, ´Name´) values";
+            let productsSql = 'Insert into ProductOrder (OrderId, Price, ´Name´) values';
             for (var i = 0; i < products.length; i++) {
                 const product = products[i];
-                productsSql = productsSql + "(" + response.orderId + ", " + product.price + ", '" + product.name + "')";
+                productsSql = productsSql + '(' + response.orderId + ', ' + product.price + ", '" + product.name + "')";
                 if ((products.length - 1) > i ) {
-                    productsSql = productsSql + ",";
+                    productsSql = productsSql + ',';
                 }
             }
             connection.query(productsSql, (err, rows) => {
                 if (err) { 
                     connection.rollback(() => {
-                        console.error("couldnt save products", err);
+                        console.error('couldnt save products', err);
                         throw err;
                     });
                 }  
                 connection.commit((err) => {
                     if (err) { 
                         connection.rollback(() => {
-                            console.error("couldnt commit transation", err);
+                            console.error('couldnt commit transation', err);
                             throw err;
                         });
                     }
@@ -83,7 +81,7 @@ app.post('/order', (req, res) => {
     });
 });
 
-app.get('/', (req, res) => res.send("ok"));
+app.get('/', (req, res) => res.send('ok'));
 
 app.get('/products', (req, res) => {
     const fileContent = fs.readFile('./Work_sample_etraveli-addon-products.xml', 'utf-8', (err, data) => {
@@ -104,4 +102,4 @@ app.get('/products', (req, res) => {
     })
 });
 
-app.listen(4200, () => console.log("Listening to port 4200"));
+app.listen(4200, () => console.log('Listening to port 4200'));
